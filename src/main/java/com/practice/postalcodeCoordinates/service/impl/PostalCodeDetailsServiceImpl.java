@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.practice.postalcodeCoordinates.model.PostalCodeCoordinate;
@@ -18,21 +20,23 @@ public class PostalCodeDetailsServiceImpl implements PostalCodeDetailsService {
 	private PostalCodeCoordinateRepository postalCodeCoordinateRepository;
 
 	@Override
-	public void getAllPostalCodeDetails() throws Exception {
+	public ResponseEntity<Object> getPostalGeoCodeInDB() throws Exception {
+		ResponseEntity<Object> response = null;
 		BufferedReader br = null;
 		try (FileInputStream fis = new FileInputStream("F:\\PC_GEO\\PCGEOUNIQ_MMYYYY_Sample.txt")) {
 			br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
 			String sCurrentLine;
 			while ((sCurrentLine = br.readLine()) != null) {
-				processLine(sCurrentLine);
+				response = LoadData(sCurrentLine);
 			}
 		} finally {
 			if (br != null)
 				br.close();
 		}
+		return response;
 	}
 
-	public void processLine(String line) {
+	public ResponseEntity<Object> LoadData(String line) {
 
 		PostalCodeCoordinate pcc = new PostalCodeCoordinate();
 		pcc.setPostalCode(line.substring(7, 14));
@@ -42,6 +46,8 @@ public class PostalCodeDetailsServiceImpl implements PostalCodeDetailsService {
 		System.out.println(pcc.getPostalCode() + "\t" + pcc.getLatitude() + "\t" + pcc.getLongitude());
 
 		postalCodeCoordinateRepository.save(pcc);
+		
+		return ResponseEntity.ok(HttpStatus.CREATED);
 		
 	}
 }

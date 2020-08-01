@@ -1,7 +1,9 @@
 package com.practice.postalcodeCoordinates.service;
 
+import org.springframework.http.ResponseEntity;
+
 public interface PostalCodeDetailsService {
 
-	void getAllPostalCodeDetails() throws Exception;
+	ResponseEntity<Object> getPostalGeoCodeInDB() throws Exception;
 
 }
