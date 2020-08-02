@@ -4,6 +4,6 @@ import org.springframework.http.ResponseEntity;
 
 public interface PostalCodeDetailsService {
 
-	ResponseEntity<Object> getPostalGeoCodeInDB() throws Exception;
+	ResponseEntity<Object> getPostalGeoCodeInDB();
 
 }

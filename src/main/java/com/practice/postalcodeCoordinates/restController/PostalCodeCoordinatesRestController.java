@@ -16,7 +16,7 @@ public class PostalCodeCoordinatesRestController {
 	private PostalCodeDetailsService postalCodeDetailsService;
 
 	@GetMapping(value = "/savePostalGeoCode")
-	public ResponseEntity<Object> getPostalGeoCodeInDB() throws Exception {
+	public ResponseEntity<Object> getPostalGeoCodeInDB() {
 		return postalCodeDetailsService.getPostalGeoCodeInDB();
 	}
 }

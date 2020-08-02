@@ -20,43 +20,41 @@ import com.practice.postalcodeCoordinates.service.PostalCodeDetailsService;
 @Service
 public class PostalCodeDetailsServiceImpl implements PostalCodeDetailsService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	
+
 	@Autowired
 	private PostalCodeCoordinateRepository postalCodeCoordinateRepository;
 
 	@Override
-	public ResponseEntity<Object> getPostalGeoCodeInDB() throws Exception {
+	public ResponseEntity<Object> getPostalGeoCodeInDB() {
 		ResponseEntity<Object> response = null;
 		BufferedReader br = null;
 		try (FileInputStream fis = new FileInputStream("F:\\PC_GEO\\PCGEOUNIQ_MMYYYY_Sample.txt")) {
 			br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
 			String sCurrentLine;
 			while ((sCurrentLine = br.readLine()) != null) {
-				response = LoadData(sCurrentLine);
+				response = loadData(sCurrentLine);
 			}
+			br.close();
 		} catch (Exception e) {
 			String message = String.format("Duplicate or invalid postal code: %s", e.getMessage());
 			logger.error(message);
 			throw new RecordNotFoundException(message);
-		} finally {
-			if (br != null)
-				br.close();
 		}
 		return response;
 	}
 
-	public ResponseEntity<Object> LoadData(String line) {
+	public ResponseEntity<Object> loadData(String line) {
 
 		PostalCodeCoordinate pcc = new PostalCodeCoordinate();
 		pcc.setPostalCode(line.substring(7, 14));
 		pcc.setLatitude(Double.parseDouble(line.substring(20, 40)));
 		pcc.setLongitude(Double.parseDouble(line.substring(40, 60)));
-		
-		System.out.println(pcc.getPostalCode() + "\t" + pcc.getLatitude() + "\t" + pcc.getLongitude());
+
+		logger.debug("Postal Code: {}, Latitude: {}, Longitude: {}", pcc.getPostalCode(), pcc.getLatitude(), pcc.getLongitude());
 
 		postalCodeCoordinateRepository.save(pcc);
-		
+
 		return ResponseEntity.ok(HttpStatus.CREATED);
-		
+
 	}
 }
