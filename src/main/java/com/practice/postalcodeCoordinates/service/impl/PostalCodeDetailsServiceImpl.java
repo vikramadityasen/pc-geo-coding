@@ -5,17 +5,22 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.practice.postalcodeCoordinates.exception.RecordNotFoundException;
 import com.practice.postalcodeCoordinates.model.PostalCodeCoordinate;
 import com.practice.postalcodeCoordinates.repository.PostalCodeCoordinateRepository;
 import com.practice.postalcodeCoordinates.service.PostalCodeDetailsService;
 
 @Service
 public class PostalCodeDetailsServiceImpl implements PostalCodeDetailsService {
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	
 	@Autowired
 	private PostalCodeCoordinateRepository postalCodeCoordinateRepository;
 
@@ -29,6 +34,10 @@ public class PostalCodeDetailsServiceImpl implements PostalCodeDetailsService {
 			while ((sCurrentLine = br.readLine()) != null) {
 				response = LoadData(sCurrentLine);
 			}
+		} catch (Exception e) {
+			String message = String.format("Duplicate or invalid postal code: %s", e.getMessage());
+			logger.error(message);
+			throw new RecordNotFoundException(message);
 		} finally {
 			if (br != null)
 				br.close();
